@@ -1,59 +1,96 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Buluşuyoruz 📅
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Buluşuyoruz**, arkadaş gruplarının kolayca etkinlik planlamasını, ortak gün/saat belirlemesini ve buluşma noktası kararlaştırmasını sağlayan modern bir web uygulamasıdır.
 
-## About Laravel
+"Ne zaman buluşalım?", "Nerede buluşalım?" kaosuna son! 🚀
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🌟 Özellikler
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 1. Etkinlik Oluşturma
+*   **Detaylı Planlama:** Etkinlik adı, açıklaması ve tarih aralığı belirleme.
+*   **İki Farklı Konum Modu:**
+    *   **Ortak Konum:** Katılımcıların kendi konumlarını girmesine izin verin, sistem ortak noktayı bulsun (Gelecek özellik).
+    *   **Buluşma Noktası:** Belirli bir yer önerin veya katılımcıların önerilerini toplayın.
+*   **Sahiplik Yönetimi:** Sadece giriş yapmış kullanıcılar etkinlik oluşturabilir ve yönetebilir.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 2. Katılımcı Yönetimi
+*   **Kolay Katılım:** Paylaşılan link üzerinden hızlıca katılım formu.
+*   **Dinamik Tarih & Saat Seçimi:** Etkinlik tarih aralığına göre dinamik oluşan takvim ve saat butonları.
+*   **Konum Bildirimi:** Tüm Türkiye il ve ilçeleriyle entegre dinamik seçim kutuları.
+*   **Anonim veya Üyeli Katılım:** Giriş yapmadan da (isim belirterek) katılım sağlanabilir (Mevcut yapıda üye zorunlu değilse).
 
-## Learning Laravel
+### 3. Dashboard (Yönetim Paneli)
+*   **Etkinlik Listesi:** Oluşturduğunuz tüm etkinlikleri tek bir yerden takip edin.
+*   **Yanıtları Görüntüleme:** Hangi katılımcının hangi gün, saat ve konumda müsait olduğunu detaylıca inceleyin.
+*   **Düzenleme İmkanı:** Oluşturduğunuz etkinliklerin detaylarını sonradan güncelleyin.
+*   **Link Paylaşımı:** Tek tıkla etkinlik davet linkini kopyalayın.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 🛠️ Teknolojiler
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Bu proje modern ve güçlü teknolojiler kullanılarak geliştirilmiştir:
 
-## Laravel Sponsors
+*   **Backend:** [Laravel 12](https://laravel.com) - PHP Framework
+*   **Frontend:** [Blade Templates](https://laravel.com/docs/blade) + [Alpine.js](https://alpinejs.dev)
+*   **Stil:** [Tailwind CSS](https://tailwindcss.com)
+*   **Veritabanı:** MySQL / SQLite
+*   **Kimlik Doğrulama:** Laravel Breeze
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 🚀 Kurulum
 
-### Premium Partners
+Projeyi yerel ortamınızda çalıştırmak için aşağıdaki adımları izleyin:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Gereksinimler
+*   PHP 8.2+
+*   Composer
+*   Node.js & NPM
+*   MySQL
 
-## Contributing
+### Adım Adım
+1.  **Projeyi Klonlayın:**
+    ```bash
+    git clone https://github.com/kullaniciadi/bulusuyoruz.git
+    cd bulusuyoruz
+    ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+2.  **Bağımlılıkları Yükleyin:**
+    ```bash
+    composer install
+    npm install
+    ```
 
-## Code of Conduct
+3.  **Çevresel Değişkenleri Ayarlayın:**
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
+    *.env dosyasını açarak veritabanı bilgilerinizi (DB_DATABASE, DB_USERNAME, vb.) güncelleyin.*
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+4.  **Veritabanını Hazırlayın:**
+    ```bash
+    php artisan migrate --seed
+    ```
+    *Not: İl ve İlçe verilerinin yüklenmesi için seed veya migration dosyalarının tam çalıştığından emin olun.*
 
-## Security Vulnerabilities
+5.  **Uygulamayı Başlatın:**
+    İki ayrı terminalde şu komutları çalıştırın:
+    
+    *Backend:*
+    ```bash
+    php artisan serve
+    ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    *Frontend (Build/Watch):*
+    ```bash
+    npm run dev
+    ```
 
-## License
+6.  **Tarayıcıda Açın:**
+    `http://localhost:8000` adresine gidin.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 📸 Ekran Görüntüleri
+
+*(Buraya projenin arayüzünden örnek ekran görüntüleri eklenebilir)*
+
+---
+
+**Lisans:** [MIT](https://opensource.org/licenses/MIT)
