@@ -45,4 +45,27 @@ class EventController extends Controller
 
         return view('events.show', compact('viewModel'));
     }
+
+    public function edit(Event $event)
+    {
+        // Authorization check: Ensure only the creator can edit
+        if (auth()->id() !== $event->user_id) {
+            abort(403, 'Bu etkinliği düzenleme yetkiniz yok.');
+        }
+
+        return view('events.edit', compact('event'));
+    }
+
+    public function update(\App\Http\Requests\UpdateEventRequest $request, Event $event)
+    {
+        // Authorization is handled by authorize() method in UpdateEventRequest
+        
+        try {
+            $this->eventService->updateEvent($event, $request->validated());
+            return redirect()->route('events.show', $event->slug)->with('success', 'Etkinlik başarıyla güncellendi!');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Event update failed: ' . $e->getMessage());
+            return back()->with('error', 'Güncelleme sırasında bir hata oluştu.');
+        }
+    }
 }

@@ -4,13 +4,15 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\DashboardController;
+
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -24,6 +26,10 @@ Route::middleware('auth')->group(function () {
     // Import Routes (Temporary)
     // Route::get('/import-data', [App\Http\Controllers\ImportController::class, 'show'])->name('import.show');
     // Route::post('/import-data', [App\Http\Controllers\ImportController::class, 'store'])->name('import.store');
+
+    // Edit Event Routes
+    Route::get('/e/{event:slug}/edit', [EventController::class, 'edit'])->name('events.edit');
+    Route::put('/e/{event:slug}', [EventController::class, 'update'])->name('events.update');
 });
 
 // Public Event Routes

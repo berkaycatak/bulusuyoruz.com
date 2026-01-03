@@ -27,4 +27,19 @@ class EventService
             ]);
         });
     }
+
+    public function updateEvent(Event $event, array $data): Event
+    {
+        return DB::transaction(function () use ($event, $data) {
+            $event->update([
+                'title' => $data['title'],
+                'description' => $data['description'] ?? null,
+                'start_date' => $data['start_date'],
+                'end_date' => $data['end_date'],
+                'location_mode' => $data['location_mode'],
+            ]);
+
+            return $event;
+        });
+    }
 }

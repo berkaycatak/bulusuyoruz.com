@@ -21,10 +21,7 @@
     },
 
     get locationValid() {
-        if(this.locationMode === 'common') {
-            return this.location === 'current' || (this.selectedProvince && this.selectedDistrict);
-        }
-        return this.location;
+        return this.location === 'current' || (this.selectedProvince && this.selectedDistrict);
     },
 
     get daysDifference() {
@@ -85,9 +82,12 @@
                 <span x-show="locationMode === 'suggestion'">Etkinlik sahibi belirli buluşma noktaları önerdi. Birini seç veya öner.</span>
             </p>
             
-            <!-- Common Mode: Input District/City -->
-            <div x-show="locationMode === 'common'" class="space-y-4">
-                <div @click="location = 'current'" 
+            <!-- Location Selection (Unified for both modes) -->
+            <div class="space-y-4">
+                
+                <!-- Current Location Option (Only for Common Mode) -->
+                <div x-show="locationMode === 'common'" 
+                     @click="location = 'current'; selectedProvince = ''; selectedDistrict = ''" 
                      class="cursor-pointer p-6 rounded-xl border-2 transition-all duration-200 flex items-center gap-4 hover:shadow-md"
                      :class="location === 'current' ? 'border-primary bg-primary/5' : 'border-slate-100 bg-white hover:border-slate-200'">
                     <div class="w-12 h-12 rounded-full bg-blue-100 text-primary flex items-center justify-center shrink-0">
@@ -102,9 +102,12 @@
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Province/District Dropdowns (Available for both modes) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" 
+                     :class="{'opacity-50': location === 'current'}"
+                     @click="if(location === 'current') location = null">
                     <div class="relative group">
-                         <select class="input-field" x-model="selectedProvince" @change="updateDistricts()">
+                         <select class="input-field" x-model="selectedProvince" @change="updateDistricts(); location = null">
                             <option value="" disabled selected>Lütfen İl Seçiniz</option>
                             <template x-for="province in provinces" :key="province.id">
                                 <option :value="province.id" x-text="province.name"></option>
@@ -112,7 +115,7 @@
                         </select>
                     </div>
                     <div class="relative group">
-                         <select class="input-field" x-model="selectedDistrict" :disabled="!selectedProvince">
+                         <select class="input-field" x-model="selectedDistrict" :disabled="!selectedProvince" @change="location = null">
                             <option value="" disabled selected>Lütfen İlçe Seçiniz</option>
                              <template x-for="district in availableDistricts" :key="district.id">
                                 <option :value="district.id" x-text="district.name"></option>
@@ -120,22 +123,6 @@
                         </select>
                     </div>
                 </div>
-            </div>
-
-            <!-- Suggestion Mode: List of Places -->
-            <div x-show="locationMode === 'suggestion'" class="space-y-4">
-                 <div @click="location = 'place1'" 
-                     class="cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-between hover:shadow-md"
-                     :class="location === 'place1' ? 'border-primary bg-primary/5' : 'border-slate-100 bg-white hover:border-slate-200'">
-                     <span class="font-medium">Caddebostan Sahil</span>
-                     <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Açık Hava</span>
-                 </div>
-                 <div @click="location = 'place2'" 
-                     class="cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-between hover:shadow-md"
-                     :class="location === 'place2' ? 'border-primary bg-primary/5' : 'border-slate-100 bg-white hover:border-slate-200'">
-                     <span class="font-medium">Beşiktaş Meydan</span>
-                     <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Merkezi</span>
-                 </div>
             </div>
 
             <div class="flex justify-end pt-8">
@@ -219,10 +206,10 @@
                     </div>
                     <div>
                         <p class="text-xs text-slate-400 font-bold uppercase tracking-wide">Konum Tercihi</p>
-                        <template x-if="locationMode === 'suggestion' || location === 'current'">
-                             <p class="text-lg font-bold text-slate-800 capitalize" x-text="location"></p>
+                        <template x-if="location === 'current'">
+                             <p class="text-lg font-bold text-slate-800">Mevcut Konumum</p>
                         </template>
-                        <template x-if="locationMode === 'common' && location !== 'current'">
+                        <template x-if="location !== 'current'">
                             <p class="text-lg font-bold text-slate-800">
                                 <span x-text="provinces.find(p => p.id == selectedProvince)?.name"></span> / 
                                 <span x-text="availableDistricts.find(d => d.id == selectedDistrict)?.name"></span>
