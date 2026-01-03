@@ -1,11 +1,60 @@
-@import 'tailwindcss';
-
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+@import "tailwindcss";
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-primary: #2563EB; /* Deep Blue */
+    --color-primary-hover: #1D4ED8;
+    --color-secondary: #22C55E; /* Soft Green */
+    --color-secondary-hover: #16A34A;
+    --color-accent: #F59E0B; /* Warm Orange */
+    --color-accent-hover: #D97706;
+
+    --font-heading: "Inter", "system-ui", "sans-serif";
+    
+    --radius-xl: 12px;
+    --radius-2xl: 20px;
+    
+    /* Animation Utilities */
+    --animate-fade-in-up: fadeInUp 0.5s ease-out forwards;
+    --animate-fade-in: fadeIn 0.4s ease-out forwards;
+    
+    @keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+}
+
+/* Custom Utilities */
+.glass {
+    @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-xl;
+}
+
+.card-hover {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+}
+
+.btn-primary {
+    @apply bg-primary text-white px-8 py-4 rounded-xl font-semibold shadow-lg shadow-primary/30 hover:bg-primary-hover transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer;
+}
+
+.btn-secondary {
+    @apply bg-white text-slate-700 border border-slate-200 px-8 py-4 rounded-xl font-semibold hover:bg-slate-50 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer;
+}
+
+.input-field {
+    @apply w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-4 text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all placeholder:text-slate-400;
+}
+
+body {
+    @apply bg-slate-50 text-slate-800 antialiased font-sans selection:bg-primary/20 selection:text-primary;
 }

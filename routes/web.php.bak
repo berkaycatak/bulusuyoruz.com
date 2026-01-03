@@ -1,0 +1,19 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Route::get('/create', function () {
+    return view('events.create');
+})->middleware(['auth'])->name('events.create');
+
+Route::get('/participate', function () {
+    return view('events.participate');
+})->name('events.participate');
+
+Route::get('/result', function () {
+    return view('events.result');
+})->name('events.result');
