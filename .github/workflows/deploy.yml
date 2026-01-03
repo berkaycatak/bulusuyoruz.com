@@ -1,0 +1,42 @@
+name: Deploy to Plesk
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 1. Trigger Plesk Git Pull (Webhook)
+        run: |
+          if [ -n "${{ secrets.PLESK_WEBHOOK_URL }}" ]; then
+            curl -k -X POST ${{ secrets.PLESK_WEBHOOK_URL }}
+            echo "Webhook triggered successfully."
+          else
+            echo "No webhook URL found. Skipping webhook step."
+          fi
+
+      - name: ⚡ 2. Run Commands on Server (SSH)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          # key: ${{ secrets.SSH_PRIVATE_KEY }} # Alternatif olarak SSH key kullanıyorsanız bunu açın
+          port: 22
+          script: |
+            cd ${{ secrets.PROJECT_PATH }}
+            
+            echo "Running composer install..."
+            composer install --no-interaction --prefer-dist --optimize-autoloader
+            
+            echo "Running npm build..."
+            npm install
+            npm run build
+            
+            echo "Optimizing Laravel..."
+            php artisan optimize
+            
+            echo "Deployment finished! 🚀"
