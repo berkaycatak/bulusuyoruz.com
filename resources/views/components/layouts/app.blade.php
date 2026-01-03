@@ -27,21 +27,8 @@
         <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-green-100 rounded-full blur-[120px] opacity-60"></div>
     </div>
 
-    <!-- Navigation (Minimal) -->
-    <header class="w-full flex items-center justify-between px-6 py-6 md:px-12 max-w-7xl mx-auto z-10">
-        <a href="/" class="text-2xl font-bold tracking-tight text-slate-900 group">
-            <span class="text-primary group-hover:opacity-80 transition-opacity">{{ config('app.name', 'Buluşuyoruz') }}</span>
-        </a>
-        
-        <nav class="hidden md:flex gap-8 text-sm font-medium text-slate-600">
-            <a href="#" class="hover:text-primary transition-colors">Nasıl Çalışır?</a>
-            <a href="#" class="hover:text-primary transition-colors">Topluluklar</a>
-        </nav>
-
-        <a href="{{ route('events.create') }}" class="md:hidden text-primary font-medium hover:underline">
-            Oluştur
-        </a>
-    </header>
+    <!-- Navigation (Unified) -->
+    <x-navbar />
 
     <!-- Main Content -->
     <main class="flex-grow w-full max-w-7xl mx-auto px-6 py-8 md:px-12 z-10">

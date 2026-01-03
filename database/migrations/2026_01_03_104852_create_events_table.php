@@ -17,9 +17,9 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('location_mode'); // common, suggestion
+            $table->enum('location_mode', ['common', 'suggestion'])->default('common');
             $table->date('start_date');
-            $table->date('end_date');
+            $table->date('end_date');   
             $table->timestamps();
         });
     }
