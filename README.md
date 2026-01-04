@@ -67,9 +67,15 @@ Projeyi yerel ortamınızda çalıştırmak için aşağıdaki adımları izleyi
 
 4.  **Veritabanını Hazırlayın:**
     ```bash
-    php artisan migrate --seed
+    php artisan migrate
     ```
-    *Not: İl ve İlçe verilerinin yüklenmesi için seed veya migration dosyalarının tam çalıştığından emin olun.*
+    
+    **İl ve İlçe Verilerini Yükleyin:**
+    ```bash
+    php artisan db:seed --class=LocationSeeder
+    ```
+    *Bu komut 81 il (koordinatlarıyla birlikte) ve 973 ilçeyi veritabanına ekler.*
+
 
 5.  **Uygulamayı Başlatın:**
     İki ayrı terminalde şu komutları çalıştırın:
