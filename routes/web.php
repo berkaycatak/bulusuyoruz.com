@@ -42,6 +42,11 @@ Route::middleware('auth')->group(function () {
 Route::get('/e/{event:slug}', [EventController::class, 'show'])->name('events.show');
 Route::post('/e/{event:slug}/respond', [App\Http\Controllers\ResponseController::class, 'store'])->name('events.respond');
 
+// Delete Response Route (requires authentication)
+Route::delete('/e/{event:slug}/responses/{response}', [App\Http\Controllers\ResponseController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('events.responses.destroy');
+
 // Old mock participate route - disabled, participation is done via show.blade.php
 // Route::get('/participate', function () {
 //     return view('events.participate');

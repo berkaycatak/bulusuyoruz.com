@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreResponseRequest;
 use App\Models\Event;
+use App\Models\Response;
 use App\Services\ResponseService;
 use Illuminate\Http\Request;
 
@@ -35,4 +36,26 @@ class ResponseController extends Controller
             return back()->with('error', $message);
         }
     }
+
+    /**
+     * Delete a response (soft delete).
+     * Only the event owner can delete responses.
+     */
+    public function destroy(Request $request, Event $event, Response $response)
+    {
+        // Authorization: Only event owner can delete responses
+        if ($event->user_id !== $request->user()?->id) {
+            abort(403, 'Bu işlemi gerçekleştirme yetkiniz yok.');
+        }
+
+        // Make sure the response belongs to the event
+        if ($response->event_id !== $event->id) {
+            abort(404, 'Yanıt bulunamadı.');
+        }
+
+        $response->delete();
+
+        return back()->with('success', 'Yanıt başarıyla silindi.');
+    }
 }
+

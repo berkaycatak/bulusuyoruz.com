@@ -26,7 +26,7 @@
         <div class="w-full sm:max-w-md px-6 py-4">
             <div class="flex flex-col items-center mb-6">
                 <a href="/" class="text-3xl font-extrabold tracking-tight text-slate-900 group">
-                    <span class="text-primary group-hover:opacity-80 transition-opacity">Buluş</span>iyoruz.
+                    <span class="text-primary group-hover:opacity-80 transition-opacity">Buluş</span>uyoruz.
                 </a>
             </div>
 

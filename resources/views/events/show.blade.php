@@ -240,7 +240,8 @@
                                 @if($viewModel->responsesCount() > 0)
                                     <div class="space-y-3">
                                         @foreach($viewModel->event->responses as $response)
-                                            <div class="bg-white/60 hover:bg-white p-4 rounded-xl border border-slate-100 transition-colors">
+                                            <div class="bg-white/60 hover:bg-white p-4 rounded-xl border border-slate-100 transition-colors" 
+                                                 x-data="{ showDeleteConfirm: false }">
                                                 <div class="flex items-center gap-3">
                                                     <div class="w-10 h-10 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm flex-shrink-0">
                                                         {{ strtoupper(substr($response->user ? $response->user->name : 'A', 0, 1)) }}
@@ -249,6 +250,14 @@
                                                         <div class="font-semibold text-slate-900 truncate">{{ $response->user ? $response->user->name : 'Anonim Katılımcı' }}</div>
                                                         <div class="text-xs text-slate-500">{{ $response->created_at->diffForHumans() }}</div>
                                                     </div>
+                                                    <!-- Delete Button -->
+                                                    <button @click="showDeleteConfirm = true" 
+                                                            class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                            title="Yanıtı Sil">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                        </svg>
+                                                    </button>
                                                 </div>
                                                 <div class="mt-3 pt-3 border-t border-slate-100 grid gap-2 text-sm">
                                                     @if($response->province && $response->district)
@@ -272,6 +281,35 @@
                                                         <span>{{ $viewModel->formatResponseTimes($response) }}</span>
                                                     </div>
                                                 </div>
+
+                                                <!-- Delete Confirmation Modal -->
+                                                <template x-teleport="body">
+                                                    <div x-show="showDeleteConfirm" x-cloak 
+                                                         class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+                                                         x-transition>
+                                                        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md mx-4" @click.away="showDeleteConfirm = false">
+                                                            <div class="text-center">
+                                                                <div class="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                                    </svg>
+                                                                </div>
+                                                                <h4 class="text-xl font-bold text-slate-900 mb-2">Yanıtı Sil?</h4>
+                                                                <p class="text-slate-500 mb-6">
+                                                                    <strong>{{ $response->user ? $response->user->name : 'Anonim Katılımcı' }}</strong> kullanıcısının yanıtını silmek istediğinize emin misiniz?
+                                                                </p>
+                                                                <div class="flex gap-3">
+                                                                    <button @click="showDeleteConfirm = false" class="flex-1 py-3 px-4 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-colors">İptal</button>
+                                                                    <form action="{{ route('events.responses.destroy', [$viewModel->event->slug, $response->id]) }}" method="POST" class="flex-1">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" class="w-full py-3 px-4 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition-colors">Evet, Sil</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </template>
                                             </div>
                                         @endforeach
                                     </div>
