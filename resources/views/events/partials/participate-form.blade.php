@@ -16,17 +16,38 @@
     selectedProvince: '{{ $viewModel->event->province_id ?? '' }}',
     selectedDistrict: '',
     availableDistricts: [],
+    
+    // Weather data
+    weatherData: {},
+    weatherLoading: false,
+    weatherError: false,
+    weatherIcons: {
+        0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
+        45: '🌫️', 48: '🌫️',
+        51: '🌧️', 53: '🌧️', 55: '🌧️',
+        61: '🌧️', 63: '🌧️', 65: '🌧️',
+        71: '❄️', 73: '❄️', 75: '❄️',
+        80: '🌦️', 81: '🌦️', 82: '🌦️',
+        95: '⛈️', 96: '⛈️', 99: '⛈️'
+    },
 
     init() {
-        // If province is restricted, pre-load districts
+        // If province is restricted, pre-load districts and fetch weather immediately
         if (this.hasProvinceRestriction && this.restrictedProvinceId) {
             this.availableDistricts = this.districts[this.restrictedProvinceId] || [];
+            this.fetchWeather();
         }
+        
+        // Watch for province changes to fetch weather
+        this.$watch('selectedProvince', (value) => {
+            if (value) this.fetchWeather();
+        });
     },
 
     updateDistricts() {
         this.availableDistricts = this.districts[this.selectedProvince] || [];
         this.selectedDistrict = '';
+        this.weatherData = {};
     },
 
     get locationValid() {
@@ -53,7 +74,53 @@
         } else {
             this.times.push(time);
         }
+    },
+    
+    getWeatherIcon(dateStr) {
+        const code = this.weatherData[dateStr]?.code;
+        return this.weatherIcons[code] || '';
+    },
+    
+    getTemperature(dateStr) {
+        const temp = this.weatherData[dateStr]?.temp;
+        return temp !== undefined ? Math.round(temp) + '°' : '';
+    },
+    
+    async fetchWeather() {
+        if (!this.selectedProvince) return;
+        
+        const province = this.provinces.find(p => p.id == this.selectedProvince);
+        if (!province || !province.latitude || !province.longitude) return;
+        
+        this.weatherLoading = true;
+        this.weatherError = false;
+        
+        try {
+            // Use coordinates from database directly
+            const { latitude, longitude } = province;
+            
+            // Get weather forecast
+            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weather_code,temperature_2m_max&timezone=auto&forecast_days=16`);
+            const weather = await weatherRes.json();
+            
+            // Map weather data by date
+            this.weatherData = {};
+            if (weather.daily && weather.daily.time) {
+                weather.daily.time.forEach((date, index) => {
+                    this.weatherData[date] = {
+                        code: weather.daily.weather_code[index],
+                        temp: weather.daily.temperature_2m_max[index]
+                    };
+                });
+            }
+        } catch (e) {
+            console.error('Weather fetch error:', e);
+            this.weatherError = true;
+        }
+        
+        this.weatherLoading = false;
     }
+
 }">
     
     <!-- Progress Steps -->
@@ -161,21 +228,20 @@
                     return {
                         date: date,
                         dateStr: date.toISOString().split('T')[0],
-                        dayOfWeek: date.getDay(), // 0=Sun, 1=Mon, ..., 6=Sat
+                        dayOfWeek: date.getDay(),
                         dayNum: date.getDate(),
                         monthShort: date.toLocaleDateString('tr-TR', { month: 'short' })
                     };
                 },
+                
                 getWeeks() {
                     const weeks = [];
-                    let currentWeek = [null, null, null, null, null, null, null]; // Mon-Sun (index 0-6)
+                    let currentWeek = [null, null, null, null, null, null, null];
                     
                     for (let i = 0; i < daysDifference; i++) {
                         const info = this.getDateInfo(i);
-                        // Convert JS day (0=Sun) to week position (Mon=0, Tue=1, ... Sun=6)
                         let weekPos = info.dayOfWeek === 0 ? 6 : info.dayOfWeek - 1;
                         
-                        // If we're at Monday and week has data, push and reset
                         if (weekPos === 0 && i > 0 && currentWeek.some(d => d !== null)) {
                             weeks.push([...currentWeek]);
                             currentWeek = [null, null, null, null, null, null, null];
@@ -184,7 +250,6 @@
                         currentWeek[weekPos] = { ...info, index: i };
                     }
                     
-                    // Push last week
                     if (currentWeek.some(d => d !== null)) {
                         weeks.push(currentWeek);
                     }
@@ -192,7 +257,19 @@
                     return weeks;
                 }
             }">
-                <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Tarih Seçimi</h3>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Tarih Seçimi</h3>
+                    <template x-if="weatherLoading">
+                        <span class="text-xs text-slate-400 flex items-center gap-1">
+                            <svg class="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Hava durumu yükleniyor...
+                        </span>
+                    </template>
+
+                </div>
                 
                 <!-- Week Days Header -->
                 <div class="grid grid-cols-7 gap-1 mb-2">
@@ -214,7 +291,7 @@
                                     <template x-if="day !== null">
                                         <button type="button"
                                                 @click="toggleDate(day.dateStr)"
-                                                class="w-full aspect-square rounded-lg flex flex-col items-center justify-center transition-all duration-200 border text-sm"
+                                                class="w-full aspect-square rounded-lg flex flex-col items-center justify-center transition-all duration-200 border text-sm relative"
                                                 :class="[
                                                     dates.includes(day.dateStr) 
                                                         ? 'bg-secondary border-secondary text-white shadow-md scale-105' 
@@ -222,8 +299,12 @@
                                                             ? 'bg-amber-50 border-amber-200 text-amber-700 hover:border-amber-400' 
                                                             : 'bg-white border-slate-200 text-slate-600 hover:border-primary/50'
                                                 ]">
-                                            <span class="text-[9px] opacity-70" x-text="day.monthShort"></span>
-                                            <span class="font-bold" x-text="day.dayNum"></span>
+                                            <!-- Weather Icon -->
+                                            <span class="text-sm leading-none" x-text="getWeatherIcon(day.dateStr)"></span>
+                                            <!-- Day Number -->
+                                            <span class="font-bold text-base leading-tight" x-text="day.dayNum"></span>
+                                            <!-- Temperature -->
+                                            <span class="text-[10px] leading-none opacity-80 font-medium" x-text="getTemperature(day.dateStr)"></span>
                                         </button>
                                     </template>
                                     <template x-if="day === null">
@@ -235,6 +316,8 @@
                     </template>
                 </div>
             </div>
+
+
 
 
             <!-- Time Selection -->
