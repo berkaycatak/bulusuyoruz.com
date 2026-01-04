@@ -13,38 +13,43 @@ class LocationSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Process Provinces (il.json)
-        $jsonIl = File::get(base_path('il.json'));
-        $dataIl = json_decode($jsonIl, true);
-
-        // Find the table data
-        $ilTable = collect($dataIl)->firstWhere('name', 'il');
+        // 1. Process Provinces from province_coordinates.json (includes lat/lng)
+        $provincesPath = database_path('data/province_coordinates.json');
         
-        if ($ilTable && isset($ilTable['data'])) {
-            $this->command->info('Seeding provinces...');
-            
-            // Disable foreign key checks to allow truncation
-            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-            DB::table('provinces')->truncate();
-            
-            $provinces = [];
-            foreach ($ilTable['data'] as $row) {
-                $provinces[] = [
-                    'id' => $row['id'],
-                    'name' => $row['name'],
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-            
-            // Insert in chunks to avoid memory limits
-            foreach (array_chunk($provinces, 100) as $chunk) {
-                DB::table('provinces')->insert($chunk);
-            }
+        if (!File::exists($provincesPath)) {
+            $this->command->error('Province coordinates file not found!');
+            return;
         }
+        
+        $this->command->info('Seeding provinces with coordinates...');
+        
+        // Disable foreign key checks to allow truncation
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('provinces')->truncate();
+        
+        $provincesData = json_decode(File::get($provincesPath), true);
+        $provinces = [];
+        
+        foreach ($provincesData as $row) {
+            $provinces[] = [
+                'id' => $row['id'],
+                'name' => $row['name'],
+                'latitude' => $row['latitude'],
+                'longitude' => $row['longitude'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+        
+        // Insert in chunks to avoid memory limits
+        foreach (array_chunk($provinces, 100) as $chunk) {
+            DB::table('provinces')->insert($chunk);
+        }
+        
+        $this->command->info("Seeded " . count($provinces) . " provinces with coordinates.");
 
         // 2. Process Districts (ilce.json)
-        $jsonIlce = File::get(base_path('ilce.json'));
+        $jsonIlce = File::get(database_path('data/ilce.json'));
         $dataIlce = json_decode($jsonIlce, true);
 
         // Find the table data
@@ -60,7 +65,7 @@ class LocationSeeder extends Seeder
             foreach ($ilceTable['data'] as $row) {
                 $districts[] = [
                     'id' => $row['id'],
-                    'province_id' => $row['il_id'], // Map il_id to province_id
+                    'province_id' => $row['il_id'],
                     'name' => $row['name'],
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -70,8 +75,12 @@ class LocationSeeder extends Seeder
             foreach (array_chunk($districts, 100) as $chunk) {
                 DB::table('districts')->insert($chunk);
             }
+            
+            $this->command->info("Seeded " . count($districts) . " districts.");
         }
         
         $this->command->info('Location seeding completed!');
     }
 }
+
+
