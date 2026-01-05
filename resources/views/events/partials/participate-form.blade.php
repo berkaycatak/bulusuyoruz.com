@@ -31,6 +31,51 @@
         95: '⛈️', 96: '⛈️', 99: '⛈️'
     },
 
+    // Heatmap Statistics
+    stats: {{ json_encode($viewModel->getResponseDateStats()) }},
+
+    getTopDates() {
+        if (!this.stats || !this.stats.counts) return [];
+        
+        return Object.entries(this.stats.counts)
+            .filter(([_, count]) => count > 0)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3)
+            .map(([date, count]) => {
+                const d = new Date(date);
+                const dateFormatted = d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' });
+                return { text: `${dateFormatted} için ${count} kişi`, date: date };
+            });
+    },
+
+    getDateClass(day) {
+        // 1. Selected State (Primary Blue)
+        if (this.dates.includes(day.dateStr)) {
+            return 'bg-secondary border-secondary text-white shadow-md scale-105 z-10';
+        }
+
+        // 2. Heatmap State (Votes > 0)
+        const count = this.stats.counts[day.dateStr] || 0;
+        if (count > 0) {
+            const max = this.stats.max;
+            const intensity = max > 0 ? count / max : 0;
+
+            if (intensity >= 0.75) return 'bg-emerald-500 border-emerald-600 text-white font-semibold shadow-sm';
+            if (intensity >= 0.5) return 'bg-emerald-400 border-emerald-400 text-white'; 
+            if (intensity >= 0.25) return 'bg-yellow-400 border-yellow-400 text-white';
+            
+            return 'bg-red-400 border-red-400 text-white';
+        }
+
+        // 3. Default State (Weekend vs Weekday)
+        // day.dayOfWeek: 0=Sun, 6=Sat
+        if (day.dayOfWeek === 0 || day.dayOfWeek === 6) {
+             return 'bg-amber-50 border-amber-200 text-amber-700 hover:border-amber-400';
+        }
+
+        return 'bg-white border-slate-200 text-slate-600 hover:border-primary/50';
+    },
+
     init() {
         // If province is restricted, pre-load districts and fetch weather immediately
         if (this.hasProvinceRestriction && this.restrictedProvinceId) {
@@ -257,18 +302,37 @@
                     return weeks;
                 }
             }">
-                <div class="flex items-center justify-between mb-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
                     <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Tarih Seçimi</h3>
-                    <template x-if="weatherLoading">
-                        <span class="text-xs text-slate-400 flex items-center gap-1">
-                            <svg class="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Hava durumu yükleniyor...
-                        </span>
-                    </template>
+                    
+                    <div class="flex items-center gap-3">
+                        <!-- Legend -->
+                        <div class="flex items-center gap-3 text-xs font-medium bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                            <span class="text-slate-400">Katılıma göre:</span>
+                            <div class="flex items-center gap-1">
+                                <span class="w-2.5 h-2.5 rounded bg-red-400"></span>
+                                <span class="text-slate-600">Düşük</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="w-2.5 h-2.5 rounded bg-yellow-400"></span>
+                                <span class="text-slate-600">Orta</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="w-2.5 h-2.5 rounded bg-emerald-500"></span>
+                                <span class="text-slate-600">Yüksek</span>
+                            </div>
+                        </div>
 
+                        <template x-if="weatherLoading">
+                            <span class="text-xs text-slate-400 flex items-center gap-1">
+                                <svg class="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span class="hidden sm:inline">Hava durumu yükleniyor...</span>
+                            </span>
+                        </template>
+                    </div>
                 </div>
                 
                 <!-- Week Days Header -->
@@ -292,15 +356,18 @@
                                         <button type="button"
                                                 @click="toggleDate(day.dateStr)"
                                                 class="w-full aspect-square rounded-lg flex flex-col items-center justify-center transition-all duration-200 border text-sm relative"
-                                                :class="[
-                                                    dates.includes(day.dateStr) 
-                                                        ? 'bg-secondary border-secondary text-white shadow-md scale-105' 
-                                                        : dayIndex >= 5 
-                                                            ? 'bg-amber-50 border-amber-200 text-amber-700 hover:border-amber-400' 
-                                                            : 'bg-white border-slate-200 text-slate-600 hover:border-primary/50'
-                                                ]">
+                                                :class="getDateClass(day)">
+                                            
+                                            <!-- Vote Count Badge (If > 0) -->
+                                            <template x-if="stats.counts[day.dateStr] > 0">
+                                                <div class="absolute top-1 right-1 flex items-center justify-center w-4 h-4 rounded-full bg-white/30 backdrop-blur-sm text-[8px] font-bold shadow-sm"
+                                                     :class="dates.includes(day.dateStr) ? 'text-white bg-white/20' : 'text-slate-800'">
+                                                    <span x-text="stats.counts[day.dateStr]"></span>
+                                                </div>
+                                            </template>
+
                                             <!-- Weather Icon -->
-                                            <span class="text-sm leading-none" x-text="getWeatherIcon(day.dateStr)"></span>
+                                            <span class="text-sm leading-none mt-1" x-text="getWeatherIcon(day.dateStr)"></span>
                                             <!-- Day Number -->
                                             <span class="font-bold text-base leading-tight" x-text="day.dayNum"></span>
                                             <!-- Temperature -->
@@ -315,6 +382,18 @@
                         </div>
                     </template>
                 </div>
+                <!-- Top Dates Text -->
+                <template x-if="getTopDates().length > 0">
+                    <div class="mt-4 flex flex-wrap gap-2 text-sm text-slate-600 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100/50">
+                        <span class="font-bold text-emerald-700">En çok tercih edilenler:</span>
+                        <template x-for="(item, index) in getTopDates()" :key="index">
+                            <span class="inline-flex items-center">
+                                <span x-text="item.text" class="font-medium"></span>
+                                <span x-show="index < getTopDates().length - 1" class="mx-2 text-slate-300">•</span>
+                            </span>
+                        </template>
+                    </div>
+                </template>
             </div>
 
 
