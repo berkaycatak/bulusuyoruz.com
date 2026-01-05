@@ -38,12 +38,18 @@ class EventController extends Controller
 
     public function show(Event $event)
     {
-        // Load relationships (responses) if needed for the view
-        $event->load(['responses.province', 'responses.district', 'responses.user', 'user']);
+        // Load event relationships (excluding responses to avoid loading all of them)
+        $event->load(['user']);
+        
+        // Paginate responses separately
+        $responses = $event->responses()
+            ->with(['province', 'district', 'user'])
+            ->latest()
+            ->paginate(10);
         
         $viewModel = new EventViewModel($event, auth()->user());
 
-        return view('events.show', compact('viewModel'));
+        return view('events.show', compact('viewModel', 'responses'));
     }
 
     public function edit(Event $event)

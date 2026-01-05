@@ -180,47 +180,55 @@
                         <!-- Main Column -->
                         <div class="lg:col-span-2 space-y-6">
                             
-                            <!-- AI Finalize Card -->
                             @if($viewModel->responsesCount() > 0)
-                            <div class="glass rounded-2xl p-6 md:p-8 relative overflow-hidden" x-data="{ loading: false }">
-                                <div class="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-emerald-500/5"></div>
-                                <div class="relative">
-                                    <div class="flex items-start gap-4 mb-6">
-                                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-teal-500/25 flex-shrink-0">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                                            </svg>
+                                <!-- AI Finalize Card -->
+                                <div class="glass rounded-2xl p-6 md:p-8 relative overflow-hidden mb-6" x-data="{ loading: false }">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-emerald-500/5"></div>
+                                    <div class="relative">
+                                        <div class="flex items-start gap-4 mb-6">
+                                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-teal-500/25 flex-shrink-0">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h3 class="text-xl font-bold text-slate-900">Yapay Zeka Hazır</h3>
+                                                <p class="text-slate-600">{{ $viewModel->responsesCount() }} katılımcının tercihlerini analiz edebilirsin.</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h3 class="text-xl font-bold text-slate-900">Yapay Zeka Hazır</h3>
-                                            <p class="text-slate-600">{{ $viewModel->responsesCount() }} katılımcının tercihlerini analiz edebilirsin.</p>
-                                        </div>
+                                        
+                                        <form action="{{ route('events.finalize', $viewModel->event->slug) }}" method="POST" @submit="loading = true">
+                                            @csrf
+                                            <button type="submit" 
+                                                    :disabled="loading"
+                                                    :class="{ 'opacity-75 cursor-wait': loading }"
+                                                    class="w-full bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-teal-500/25 hover:shadow-xl hover:shadow-teal-500/30 transition-all flex items-center justify-center gap-3">
+                                                <template x-if="!loading">
+                                                    <span class="flex items-center gap-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                                        </svg>
+                                                        Yapay Zeka ile Planla
+                                                    </span>
+                                                </template>
+                                                <template x-if="loading">
+                                                    <span class="flex items-center gap-2">
+                                                        <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                                        Analiz Ediliyor...
+                                                    </span>
+                                                </template>
+                                            </button>
+                                        </form>
                                     </div>
-                                    
-                                    <form action="{{ route('events.finalize', $viewModel->event->slug) }}" method="POST" @submit="loading = true">
-                                        @csrf
-                                        <button type="submit" 
-                                                :disabled="loading"
-                                                :class="{ 'opacity-75 cursor-wait': loading }"
-                                                class="w-full bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-teal-500/25 hover:shadow-xl hover:shadow-teal-500/30 transition-all flex items-center justify-center gap-3">
-                                            <template x-if="!loading">
-                                                <span class="flex items-center gap-2">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                                                    </svg>
-                                                    Yapay Zeka ile Planla
-                                                </span>
-                                            </template>
-                                            <template x-if="loading">
-                                                <span class="flex items-center gap-2">
-                                                    <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                                    Analiz Ediliyor...
-                                                </span>
-                                            </template>
-                                        </button>
-                                    </form>
                                 </div>
-                            </div>
+
+                                <!-- Heatmap Calendar -->
+                                <div class="mb-6">
+                                    @include('events.partials.heatmap-calendar')
+                                </div>
+                                <div class="mb-8">
+                                    @include('events.partials.heatmap-districts')
+                                </div>
                             @endif
 
                             <!-- Participants List -->
@@ -239,7 +247,7 @@
 
                                 @if($viewModel->responsesCount() > 0)
                                     <div class="space-y-3">
-                                        @foreach($viewModel->event->responses as $response)
+                                        @foreach($responses as $response)
                                             <div class="bg-white/60 hover:bg-white p-4 rounded-xl border border-slate-100 transition-colors" 
                                                  x-data="{ showDeleteConfirm: false }">
                                                 <div class="flex items-center gap-3">
@@ -312,6 +320,11 @@
                                                 </template>
                                             </div>
                                         @endforeach
+
+                                        <!-- Pagination -->
+                                        <div class="mt-6">
+                                            {{ $responses->links() }}
+                                        </div>
                                     </div>
                                 @else
                                     <div class="text-center py-10">

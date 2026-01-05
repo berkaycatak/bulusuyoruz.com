@@ -76,4 +76,74 @@ class EventViewModel
         
         return implode(', ', $response->selected_times);
     }
+
+    public function getResponseDateStats(): array
+    {
+        $stats = [];
+        $maxCount = 0;
+        $totalResponses = $this->responsesCount();
+
+        foreach ($this->event->responses as $response) {
+            if (!empty($response->selected_dates)) {
+                foreach ($response->selected_dates as $date) {
+                    if (!isset($stats[$date])) {
+                        $stats[$date] = 0;
+                    }
+                    $stats[$date]++;
+                }
+            }
+        }
+
+        if (!empty($stats)) {
+            $maxCount = max($stats);
+        }
+
+        return [
+            'counts' => $stats,
+            'max' => $maxCount,
+            'total' => $totalResponses
+        ];
+    }
+
+    public function getResponseDistrictStats(): array
+    {
+        $stats = [];
+        $districtNames = [];
+        $maxCount = 0;
+        $totalResponses = $this->responsesCount();
+
+        foreach ($this->event->responses as $response) {
+            if ($response->district_id) {
+                $id = $response->district_id;
+                
+                if (!isset($stats[$id])) {
+                    $stats[$id] = 0;
+                    // Cache name to avoid N+1 or repeated lookups if relation is loaded
+                    $districtNames[$id] = $response->district->name ?? 'Bilinmeyen İlçe';
+                }
+                $stats[$id]++;
+            }
+        }
+
+        $items = [];
+        if (!empty($stats)) {
+            $maxCount = max($stats);
+            // Sort by count descending
+            arsort($stats);
+            
+            foreach ($stats as $id => $count) {
+                $items[] = [
+                    'id' => $id,
+                    'name' => $districtNames[$id] ?? 'Bilinmeyen İlçe',
+                    'count' => $count
+                ];
+            }
+        }
+
+        return [
+            'items' => $items,
+            'max' => $maxCount,
+            'total' => $totalResponses
+        ];
+    }
 }
