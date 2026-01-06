@@ -7,7 +7,7 @@
     <!-- Desktop Navigation -->
     <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
         <a href="{{ route('events.create') }}" class="hover:text-primary transition-colors">Etkinlik Oluştur</a>
-        <a href="#nasil-calisir" class="hover:text-primary transition-colors">Nasıl Çalışır?</a>
+        <a href="{{ url('/') }}#nasil-calisir" class="hover:text-primary transition-colors">Nasıl Çalışır?</a>
 
         @auth
             <!-- User Dropdown -->
