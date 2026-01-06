@@ -15,6 +15,7 @@ class Response extends Model
         'event_id',
         'user_id',
         'ip_address',
+        'email',
         'location_answer',
         'province_id',
         'district_id',

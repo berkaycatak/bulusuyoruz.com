@@ -17,6 +17,9 @@
     selectedDistrict: '',
     availableDistricts: [],
     
+    // Email for notification
+    email: '',
+    
     // Weather data
     weatherData: {},
     weatherLoading: false,
@@ -433,6 +436,22 @@
             
             <h2 class="text-2xl font-bold mb-6 text-slate-800">Özet & Onay</h2>
             
+            <!-- Email Input for Notification -->
+            <div class="mb-6 p-4 bg-blue-50/50 rounded-xl border border-blue-100">
+                <label for="email" class="flex items-center gap-2 text-sm font-semibold text-blue-700 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Buluşma planlandığında haber almak ister misin?
+                </label>
+                <input type="email" 
+                       id="email" 
+                       x-model="email" 
+                       placeholder="ornek@email.com (isteğe bağlı)"
+                       class="input-field bg-white">
+                <p class="text-xs text-blue-600/70 mt-2">E-posta adresin yalnızca bu etkinlikle ilgili bildirim göndermek için kullanılacaktır.</p>
+            </div>
+            
             <div class="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-xl p-6 mb-8 shadow-inner space-y-4">
                 
                 <!-- Location Summary -->
@@ -493,6 +512,7 @@
                 <input type="hidden" name="location_answer" :value="location">
                 <input type="hidden" name="province_id" :value="selectedProvince">
                 <input type="hidden" name="district_id" :value="selectedDistrict">
+                <input type="hidden" name="email" :value="email">
                 <template x-for="date in dates">
                     <input type="hidden" name="selected_dates[]" :value="date">
                 </template>

@@ -20,6 +20,7 @@ class ResponseService
             return $event->responses()->create([
                 'user_id' => $user?->id,
                 'ip_address' => $ip,
+                'email' => $data['email'] ?? null,
                 'location_answer' => $data['location_answer'] ?? null,
                 'province_id' => $data['province_id'],
                 'district_id' => $data['district_id'],

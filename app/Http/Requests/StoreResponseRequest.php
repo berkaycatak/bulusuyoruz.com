@@ -20,6 +20,7 @@ class StoreResponseRequest extends FormRequest
             'location_answer' => ['nullable', 'string'],
             'province_id' => ['required', 'exists:provinces,id'],
             'district_id' => ['required', 'exists:districts,id'],
+            'email' => ['nullable', 'email', 'max:255'],
         ];
     }
 
