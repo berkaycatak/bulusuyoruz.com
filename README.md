@@ -25,7 +25,7 @@
 *   **Düzenleme İmkanı:** Oluşturduğunuz etkinliklerin detaylarını sonradan güncelleyin.
 *   **Link Paylaşımı:** Tek tıkla etkinlik davet linkini kopyalayın.
 
-## 🛠️ Teknolojiler
+## Teknolojiler
 
 Bu proje modern ve güçlü teknolojiler kullanılarak geliştirilmiştir:
 
